@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Routine Planner</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Variables for easy theme switching and consistent styling */
+        :root {
+            --primary-color: #64b5f6; /* Light Blue */
+            --primary-dark: #2196f3; /* Darker Blue */
+            --secondary-color: #81c784; /* Light Green */
+            --accent-color: #ffb74d; /* An energetic orange */
+            --text-color-primary: #212121; /* Dark Gray */
+            --text-color-secondary: #757575; /* Medium Gray */
+            --bg-color: #e3f2fd; /* Very Light Blue Background */
+            --card-bg-color: rgba(255, 255, 255, 0.7); /* Translucent White */
+            --border-color: rgba(255, 255, 255, 0.3); /* Translucent White Border */
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --input-bg-color: rgba(255, 255, 255, 0.9);
+            --placeholder-color: #bdbdbd;
+
+            /* Dark Theme Variables */
+            --dark-primary-color: #536dfe; /* Indigo */
+            --dark-secondary-color: #4db6ac; /* Teal */
+            --dark-accent-color: #ff8a65; /* Deep Orange */
+            --dark-text-color-primary: #e0e0e0; /* Light Gray */
+            --dark-text-color-secondary: #9e9e9e; /* Gray */
+            --dark-bg-color: #212121; /* Dark Gray Background */
+            --dark-card-bg-color: rgba(33, 33, 33, 0.8); /* Translucent Dark Gray */
+            --dark-border-color: rgba(255, 255, 255, 0.1);
+            --dark-shadow-color: rgba(0, 0, 0, 0.4);
+            --dark-input-bg-color: rgba(66, 66, 66, 0.9);
+            --dark-placeholder-color: #757575;
+        }
+
+        /* --- Base Styles --- */
+        body {
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color-primary);
+            overflow: hidden; /* Prevent body scroll, particles handle full height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s ease, color 0.5s ease; /* Smooth theme transition */
+        }
+
+        /* Particles.js Container */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Ensure it's behind content */
+            background-color: transparent; /* particles.js draws on top of body bg */
+        }
+
+        /* Main Content Container */
+        .container {
+            position: relative; /* For z-index to work */
+            z-index: 1; /* Above particles */
+            background-color: var(--card-bg-color);
+            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px var(--shadow-color);
+            width: 100%;
+            max-width: 900px;
+            border: 1px solid var(--border-color); /* Light border */
+            animation: fadeIn 1s ease-out; /* Initial fade in */
+            transition: background-color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease;
+        }
+
+        /* Login/Register Container (Specific styles) */
+        #authContainer {
+            max-width: 450px; /* Smaller width for auth forms */
+            padding: 30px;
+            text-align: center;
+        }
+        #authContainer h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+        }
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .auth-form input[type="text"],
+        .auth-form input[type="password"] {
+            padding: 15px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1.05em;
+            color: var(--text-color-primary);
+            background-color: var(--input-bg-color);
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, color 0.5s ease;
+        }
+        .auth-form input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 5px rgba(100, 181, 246, 0.3);
+            outline: none;
+        }
+        .auth-form button {
+            padding: 16px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(100, 181, 246, 0.4);
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        .auth-form button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(100, 181, 246, 0.6);
+        }
+        .auth-toggle-text {
+            color: var(--text-color-secondary);
+            font-size: 0.95em;
+            margin-top: 20px;
+        }
+        .auth-toggle-text a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .auth-toggle-text a:hover {
+            text-decoration: underline;
+        }
+        #authMessage {
+            color: #ef5350; /* Red for errors */
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+
+        /* Headers */
+        h1, h2 {
+            font-family: 'Kanit', sans-serif;
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+            transition: color 0.5s ease;
+        }
+        h1 { font-size: 3em; }
+        h2 { font-size: 2.2em; margin-top: 40px; }
+
+        /* Current Date & Time Display */
+        #currentDateTime {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: var(--text-color-secondary);
+            margin-bottom: 25px;
+            transition: color 0.5s ease;
+        }
+        #currentDateTime strong {
+            color: var(--text-color-primary);
+        }
+
+        /* Daily Quote */
+        #dailyQuote {
+            text-align: center;
+            font-style: italic;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+            font-size: 1.2em;
+            line-height: 1.6;
+            padding: 15px 25px;
+            background: rgba(255, 183, 77, 0.1);
+            border-left: 5px solid var(--accent-color);
+            border-radius: 8px;
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+        body.dark-mode #dailyQuote {
+            background: rgba(255, 138, 101, 0.15);
+        }
+
+
+        /* --- Form Styles --- */
+        .routine-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly less translucent */
+            border-radius: 15px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); /* Inner shadow for depth */
+            border: 1px solid var(--border-color);
+            transition: background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-color-primary);
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            transition: color 0.5s ease;
+        }
+
+        .routine-form input[type="text"],
+        .routine-form select, /* Style for select dropdowns */
+        .routine-form textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1.05em;
+            color: var(--text-color-primary);
+            background-color: var(--input-bg-color);
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, color 0.5s ease;
+            -webkit-appearance: none; /* Remove default dropdown arrow on WebKit browsers */
+            -moz-appearance: none; /* Remove default dropdown arrow on Firefox */
+            appearance: none; /* Remove default dropdown arrow */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23bdbdbd%22%20d%3D%22M287%2C197.8L156.4%2C67.2c-2.4-2.4-5.6-3.8-9-3.8s-6.6%2C1.4-9%2C3.8L5.4%2C197.8c-2.4%2C2.4-3.8%2C5.6-3.8%2C9s1.4%2C6.6%2C3.8%2C9l22.7%2C22.7c2.4%2C2.4%2C5.6%2C3.8%2C9%2C3.8s6.6-1.4%2C9-3.8l105.1-105.1L246.3%2C238.5c2.4%2C2.4%2C5.6%2C3.8%2C9%2C3.8s6.6-1.4%2C9-3.8l22.7-22.7c2.4-2.4%2C3.8-5.6%2C3.8-9S289.4%2C200.2%2C287%2C197.8z%22%2F%3E%3C%2Fsvg%3E'); /* Custom dropdown arrow */
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 1em;
+            padding-right: 40px; /* Make space for the custom arrow */
+        }
+        .routine-form input::placeholder,
+        .routine-form textarea::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        .routine-form input[type="text"]:focus,
+        .routine-form select:focus, /* Focus style for selects */
+        .routine-form textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 5px rgba(100, 181, 246, 0.3); /* Soft glow */
+            outline: none;
+        }
+
+        .routine-form .time-select-group {
+            display: flex;
+            gap: 10px; /* Space between hour and minute selects */
+        }
+        .routine-form .time-select-group select {
+            flex-grow: 1; /* Make hour and minute selects take equal space */
+        }
+
+        .routine-form textarea {
+            grid-column: 1 / -1;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .routine-form button {
+            grid-column: 1 / -1;
+            padding: 16px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(100, 181, 246, 0.4);
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .routine-form button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(100, 181, 246, 0.6);
+        }
+
+        /* --- Routine List Styles --- */
+        #routineList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #routineList li {
+            background-color: var(--card-bg-color);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, border-color 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: grab; /* Drag cursor */
+        }
+
+        #routineList li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        #routineList li.completed {
+            background-color: rgba(129, 199, 132, 0.5); /* Semi-transparent green */
+            border-color: rgba(129, 199, 132, 0.3);
+            opacity: 0.9;
+            color: var(--text-color-secondary);
+        }
+
+        /* Animated strike-through effect */
+        #routineList li.completed .routine-details h3,
+        #routineList li.completed .routine-details p {
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+        #routineList li.completed .routine-details::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+            transform: scaleX(0); /* Start scaled to 0 */
+            transform-origin: left;
+            animation: drawLine 0.4s forwards ease-out;
+            z-index: 0;
+        }
+        @keyframes drawLine {
+            to { transform: scaleX(1); }
+        }
+
+        .routine-details {
+            flex-grow: 1;
+            margin-right: 25px;
+        }
+        .routine-details h3 {
+            font-family: 'Kanit', sans-serif;
+            margin: 0 0 8px 0;
+            color: var(--text-color-primary);
+            font-size: 1.7em;
+            font-weight: 600;
+            transition: color 0.5s ease;
+        }
+        #routineList li.completed .routine-details h3 {
+            color: var(--text-color-secondary);
+        }
+        .routine-details p {
+            margin: 0;
+            color: var(--text-color-secondary);
+            font-size: 0.95em;
+            transition: color 0.5s ease;
+        }
+
+        .routine-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .routine-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .routine-actions .complete-btn {
+            background-color: var(--secondary-color);
+        }
+        .routine-actions .complete-btn:hover {
+            background-color: #66bb6a; /* Darker green */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(129, 199, 132, 0.5);
+        }
+        .routine-actions .complete-btn.undo-btn {
+            background-color: var(--accent-color); /* Orange for Undo */
+        }
+        .routine-actions .complete-btn.undo-btn:hover {
+            background-color: #ffa726; /* Darker orange */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(255, 183, 77, 0.5);
+        }
+
+        .routine-actions .delete-btn {
+            background-color: #ef5350; /* Red */
+        }
+        .routine-actions .delete-btn:hover {
+            background-color: #e53935; /* Darker red */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(239, 83, 80, 0.5);
+        }
+
+        /* --- Progress Indicator --- */
+        #progressIndicator {
+            width: 100%;
+            height: 12px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 6px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            transition: background-color 0.5s ease;
+        }
+
+        #progressBar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--secondary-color);
+            border-radius: 6px;
+            transition: width 0.4s ease-out, background-color 0.5s ease;
+        }
+
+        /* --- Theme Switcher --- */
+        .theme-switcher {
+            position: fixed; /* Fixed position */
+            top: 30px;
+            right: 30px;
+            z-index: 100; /* On top of everything */
+        }
+        .theme-switcher button {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+        }
+        .theme-switcher button i {
+            font-size: 1.6em;
+            color: var(--text-color-primary);
+            transition: color 0.3s ease;
+        }
+        .theme-switcher button:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* --- Dark Mode Styles --- */
+        body.dark-mode {
+            --bg-color: var(--dark-bg-color);
+            --text-color-primary: var(--dark-text-color-primary);
+            --text-color-secondary: var(--dark-text-color-secondary);
+            --card-bg-color: var(--dark-card-bg-color);
+            --border-color: var(--dark-border-color);
+            --shadow-color: var(--dark-shadow-color);
+            --input-bg-color: var(--dark-input-bg-color);
+            --placeholder-color: var(--dark-placeholder-color);
+            --primary-color: var(--dark-primary-color);
+            --primary-dark: #3f51b5; /* Darker indigo */
+            --secondary-color: var(--dark-secondary-color);
+            --accent-color: var(--dark-accent-color);
+        }
+        body.dark-mode .theme-switcher button {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode .theme-switcher button i {
+            color: var(--dark-text-color-primary);
+        }
+        body.dark-mode .theme-switcher button:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        body.dark-mode .routine-form, body.dark-mode .auth-form {
+            background-color: rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 2px 8px rgba(255,255,255,0.05);
+        }
+        body.dark-mode #routineList li.completed {
+            background-color: rgba(77, 182, 172, 0.3); /* Darker semi-transparent teal */
+            border-color: rgba(77, 182, 172, 0.15);
+        }
+        body.dark-mode .routine-actions button {
+            box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+        }
+        body.dark-mode #progressIndicator {
+            background-color: rgba(255,255,255,0.1);
+        }
+        body.dark-mode #progressBar {
+            background-color: var(--dark-secondary-color);
+        }
+        body.dark-mode #authMessage {
+            color: #ff8a65; /* Darker orange for errors in dark mode */
+        }
+        body.dark-mode #dailyQuote {
+            background: rgba(255, 138, 101, 0.15);
+        }
+
+        /* Header for logged in user */
+        #loggedInUser {
+            text-align: right;
+            font-size: 1.1em;
+            color: var(--text-color-primary);
+            margin-bottom: 10px;
+            transition: color 0.5s ease;
+        }
+        #loggedInUser span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        #logoutButton {
+            background: none;
+            border: none;
+            color: #ef5350;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 10px;
+            transition: color 0.3s ease;
+        }
+        #logoutButton:hover {
+            color: #d32f2f;
+        }
+
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+                border-radius: 15px;
+            }
+            h1 { font-size: 2.5em; }
+            h2 { font-size: 2em; margin-top: 30px; }
+            #dailyQuote { font-size: 1em; padding: 10px 20px;}
+            .routine-form {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            .routine-form button {
+                padding: 14px 25px;
+            }
+            #routineList li {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px 25px;
+                margin-bottom: 15px;
+            }
+            .routine-details {
+                margin-bottom: 12px;
+                margin-right: 0;
+                width: 100%;
+            }
+            .routine-details h3 { font-size: 1.5em; }
+            .routine-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
+                gap: 10px;
+            }
+            .routine-actions button {
+                padding: 9px 15px;
+                font-size: 0.9em;
+            }
+            .theme-switcher {
+                top: 20px;
+                right: 20px;
+            }
+            .theme-switcher button {
+                width: 45px;
+                height: 45px;
+            }
+            .theme-switcher button i {
+                font-size: 1.4em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 15px; }
+            .container {
+                padding: 25px;
+                border-radius: 12px;
+            }
+            h1 { font-size: 2.2em; margin-bottom: 25px; }
+            h2 { font-size: 1.8em; margin-top: 25px; }
+            #currentDateTime { font-size: 0.9em; }
+            .routine-form { padding: 15px; }
+            #routineList li { padding: 18px 20px; }
+            .routine-details h3 { font-size: 1.3em; }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div> <div class="theme-switcher">
+        <button id="themeToggle"><i class="fas fa-moon"></i></button> </div>
+
+    <div id="authContainer" class="container animate__animated animate__fadeInDown" style="display: none;">
+        <h2 id="authTitle">เข้าสู่ระบบ</h2>
+        <div id="authMessage" style="display: none;"></div>
+        <form class="auth-form" id="loginForm">
+            <input type="text" id="loginUsername" placeholder="ชื่อผู้ใช้" required>
+            <input type="password" id="loginPassword" placeholder="รหัสผ่าน" required>
+            <button type="submit">เข้าสู่ระบบ <i class="fas fa-sign-in-alt"></i></button>
+        </form>
+        <form class="auth-form" id="registerForm" style="display: none;">
+            <input type="text" id="registerUsername" placeholder="ชื่อผู้ใช้ใหม่" required>
+            <input type="password" id="registerPassword" placeholder="รหัสผ่านใหม่" required>
+            <button type="submit">ลงทะเบียน <i class="fas fa-user-plus"></i></button>
+        </form>
+        <p class="auth-toggle-text">
+            <span id="toggleToRegister">ยังไม่มีบัญชี? <a href="#">ลงทะเบียนที่นี่</a></span>
+            <span id="toggleToLogin" style="display: none;">มีบัญชีอยู่แล้ว? <a href="#">เข้าสู่ระบบที่นี่</a></span>
+        </p>
+    </div>
+
+    <div id="mainAppContainer" class="container" style="display: none;">
+        <div id="loggedInUser"></div> <h1 class="animate__animated animate__pulse animate__infinite">My Daily Routines</h1>
+        <div id="currentDateTime"></div> <div id="dailyQuote" class="animate__animated animate__fadeIn"></div> <div class="routine-form animate__animated animate__fadeInUp">
+            <div class="form-group">
+                <label for="routineTitle">ชื่อกิจวัตร:</label>
+                <input type="text" id="routineTitle" placeholder="เช่น ตื่นนอน, ออกกำลังกาย">
+            </div>
+
+            <div class="form-group">
+                <label for="routineStartHour">เวลาเริ่มต้น:</label>
+                <div class="time-select-group">
+                    <select id="routineStartHour"></select>
+                    <select id="routineStartMinute"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="routineEndHour">เวลาสิ้นสุด (ไม่บังคับ):</label>
+                <div class="time-select-group">
+                    <select id="routineEndHour"></select>
+                    <select id="routineEndMinute"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="routineDescription">คำอธิบาย (ไม่บังคับ):</label>
+                <textarea id="routineDescription" placeholder="เช่น ดื่มน้ำ 1 แก้ว, วิ่ง 30 นาที"></textarea>
+            </div>
+            
+            <button id="addRoutineButton">เพิ่มกิจวัตร <i class="fas fa-plus-circle"></i></button>
+        </div>
+
+        <h2>ตารางกิจวัตรวันนี้</h2>
+        <div id="progressIndicator">
+            <div id="progressBar"></div>
+        </div>
+        <ul id="routineList">
+            </ul>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:5000/api';
+
+        // --- Auth Elements ---
+        const authContainer = document.getElementById('authContainer');
+        const mainAppContainer = document.getElementById('mainAppContainer');
+        const authTitle = document.getElementById('authTitle');
+        const authMessage = document.getElementById('authMessage');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginUsernameInput = document.getElementById('loginUsername');
+        const loginPasswordInput = document.getElementById('loginPassword');
+        const registerUsernameInput = document.getElementById('registerUsername');
+        const registerPasswordInput = document.getElementById('registerPassword');
+        const toggleToRegisterLink = document.getElementById('toggleToRegister');
+        const toggleToLoginLink = document.getElementById('toggleToLogin');
+        const loggedInUserDiv = document.getElementById('loggedInUser');
+
+        // --- App Elements ---
+        const routineTitleInput = document.getElementById('routineTitle');
+        const routineStartHourSelect = document.getElementById('routineStartHour');
+        const routineStartMinuteSelect = document.getElementById('routineStartMinute');
+        const routineEndHourSelect = document.getElementById('routineEndHour');
+        const routineEndMinuteSelect = document.getElementById('routineEndMinute');
+        const routineDescriptionInput = document.getElementById('routineDescription');
+        const addRoutineButton = document.getElementById('addRoutineButton');
+        const routineList = document.getElementById('routineList');
+        const progressBar = document.getElementById('progressBar');
+        const themeToggle = document.getElementById('themeToggle');
+        const currentDateTimeDiv = document.getElementById('currentDateTime');
+        const dailyQuoteDiv = document.getElementById('dailyQuote');
+
+        let isDarkMode = false; // Track current theme state
+
+        // --- Motivational Quotes ---
+        const motivationalQuotes = [
+            "การเริ่มต้นคือครึ่งหนึ่งของการสำเร็จ.",
+            "ก้าวเล็กๆ ในวันนี้ คือก้าวสำคัญในวันหน้า.",
+            "ทำวันนี้ให้ดีที่สุด เพื่ออนาคตที่ดีกว่า.",
+            "วินัย คือสะพานเชื่อมระหว่างเป้าหมายกับความสำเร็จ.",
+            "อย่าหยุดเมื่อเหนื่อย แต่หยุดเมื่อสำเร็จ.",
+            "ทุกวันคือโอกาสใหม่ในการเป็นคนที่ดีขึ้น.",
+            "ความสม่ำเสมอคือกุญแจสู่ความสำเร็จ.",
+            "เป้าหมายที่ชัดเจน ทำให้ชีวิตมีความหมาย.",
+            "คุณทำได้แน่นอน!",
+            "จงเป็นตัวเองในเวอร์ชันที่ดีที่สุด."
+        ];
+
+        // --- Confetti Colors (can match theme) ---
+        const confettiColorsLight = ['#64b5f6', '#81c784', '#ffb74d', '#ff5252', '#ba68c8'];
+        const confettiColorsDark = ['#536dfe', '#4db6ac', '#ff8a65', '#ef5350', '#7e57c2'];
+
+
+        // --- Helper Function for Populating Time Selects ---
+        function populateTimeSelects() {
+            // Add an empty option for non-required end time
+            const emptyOptionEndHour = document.createElement('option');
+            emptyOptionEndHour.value = '';
+            emptyOptionEndHour.textContent = 'ชั่วโมง';
+            routineEndHourSelect.appendChild(emptyOptionEndHour);
+
+            const emptyOptionEndMinute = document.createElement('option');
+            emptyOptionEndMinute.value = '';
+            emptyOptionEndMinute.textContent = 'นาที';
+            routineEndMinuteSelect.appendChild(emptyOptionEndMinute);
+
+            // Populate hours (00-23)
+            for (let i = 0; i < 24; i++) {
+                const hour = String(i).padStart(2, '0');
+                const optionStart = document.createElement('option');
+                optionStart.value = hour;
+                optionStart.textContent = hour;
+                routineStartHourSelect.appendChild(optionStart);
+
+                const optionEnd = document.createElement('option');
+                optionEnd.value = hour;
+                optionEnd.textContent = hour;
+                routineEndHourSelect.appendChild(optionEnd);
+            }
+
+            // Populate minutes (00-59)
+            for (let i = 0; i < 60; i++) {
+                const minute = String(i).padStart(2, '0');
+                const optionStart = document.createElement('option');
+                optionStart.value = minute;
+                optionStart.textContent = minute;
+                routineStartMinuteSelect.appendChild(optionStart);
+
+                const optionEnd = document.createElement('option');
+                optionEnd.value = minute;
+                optionEnd.textContent = minute;
+                routineEndMinuteSelect.appendChild(optionEnd);
+            }
+
+            // Set default to current time (optional, but good UX)
+            const now = new Date();
+            const currentHour = String(now.getHours()).padStart(2, '0');
+            const currentMinute = String(now.getMinutes()).padStart(2, '0');
+            routineStartHourSelect.value = currentHour;
+            routineStartMinuteSelect.value = currentMinute;
+        }
+
+        // --- Current Date & Time Display Update ---
+        function updateDateTime() {
+            const now = new Date();
+            const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; // Use 24-hour format
+            
+            const dateString = now.toLocaleDateString('th-TH', optionsDate);
+            const timeString = now.toLocaleTimeString('th-TH', optionsTime);
+
+            currentDateTimeDiv.innerHTML = `วันนี้: <strong>${dateString}</strong> เวลา: <strong>${timeString}</strong>`;
+        }
+
+        // --- Display Random Quote ---
+        function displayRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
+            dailyQuoteDiv.textContent = motivationalQuotes[randomIndex];
+        }
+
+        // --- particles.js Initialization ---
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff" // Particle color (will change with theme)
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff", // Line color (will change with theme)
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Function to update particles.js color based on theme
+        function updateParticleColors() {
+            const particlesJson = window.pJSDom[0].pJS.particles;
+            if (isDarkMode) {
+                particlesJson.color.value = "#4db6ac"; // Teal for dark mode
+                particlesJson.line_linked.color = "#4db6ac";
+            } else {
+                particlesJson.color.value = "#64b5f6"; // Light Blue for light mode
+                particlesJson.line_linked.color = "#64b5f6";
+            }
+            window.pJSDom[0].pJS.fn.particlesCreate(); // Redraw particles
+        }
+
+        // --- Confetti Animation ---
+        function triggerConfetti() {
+            const colors = isDarkMode ? confettiColorsDark : confettiColorsLight;
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: colors
+            });
+        }
+
+        // --- Auth Functions ---
+        function getToken() {
+            return localStorage.getItem('jwt_token');
+        }
+
+        function setToken(token) {
+            localStorage.setItem('jwt_token', token);
+        }
+
+        function removeToken() {
+            localStorage.removeItem('jwt_token');
+            localStorage.removeItem('username'); // Also remove username
+        }
+
+        function getUsername() {
+            return localStorage.getItem('username');
+        }
+
+        function setUsername(username) {
+            localStorage.setItem('username', username);
+        }
+
+        function showAuthMessage(message, isError = true) {
+            authMessage.textContent = message;
+            authMessage.style.color = isError ? '#ef5350' : 'var(--primary-color)';
+            authMessage.style.display = 'block';
+            setTimeout(() => {
+                authMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const username = registerUsernameInput.value.trim();
+            const password = registerPasswordInput.value.trim();
+
+            if (!username || !password) {
+                showAuthMessage("กรุณาใส่ชื่อผู้ใช้และรหัสผ่าน");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showAuthMessage(data.message, false); // Green message for success
+                    registerForm.style.display = 'none';
+                    loginForm.style.display = 'flex';
+                    authTitle.textContent = 'เข้าสู่ระบบ';
+                    toggleToRegisterLink.style.display = 'block';
+                    toggleToLoginLink.style.display = 'none';
+                    // Clear register form
+                    registerUsernameInput.value = '';
+                    registerPasswordInput.value = '';
+                } else {
+                    showAuthMessage(data.message || "ลงทะเบียนไม่สำเร็จ");
+                }
+            } catch (error) {
+                console.error("Register error:", error);
+                showAuthMessage("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value.trim();
+
+            if (!username || !password) {
+                showAuthMessage("กรุณาใส่ชื่อผู้ใช้และรหัสผ่าน");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setToken(data.token);
+                    setUsername(data.username); // Store username for display
+                    checkAuthAndRender(); // Re-render app after successful login
+                } else {
+                    showAuthMessage(data.message || "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                showAuthMessage("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+            }
+        }
+
+        function logout() {
+            removeToken();
+            checkAuthAndRender(); // Show login page
+        }
+
+        function checkAuthAndRender() {
+            if (getToken()) {
+                authContainer.style.display = 'none';
+                mainAppContainer.style.display = 'block';
+                loggedInUserDiv.innerHTML = `สวัสดี, <span>${getUsername()}</span>! <button id="logoutButton">ออกจากระบบ</button>`;
+                document.getElementById('logoutButton').addEventListener('click', logout);
+                fetchRoutines(); // Load routines for the logged-in user
+            } else {
+                authContainer.style.display = 'block';
+                mainAppContainer.style.display = 'none';
+                authTitle.textContent = 'เข้าสู่ระบบ';
+                loginForm.style.display = 'flex';
+                registerForm.style.display = 'none';
+                toggleToRegisterLink.style.display = 'block';
+                toggleToLoginLink.style.display = 'none';
+            }
+        }
+
+        // --- API Interaction Functions (Now includes Auth Header) ---
+
+        async function fetchRoutines() {
+            try {
+                const token = getToken();
+                if (!token) {
+                    console.error("No token found. User not authenticated.");
+                    checkAuthAndRender(); // Redirect to login if token is missing
+                    return;
+                }
+                const response = await fetch(`${API_BASE_URL}/routines`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.status === 401) { // Unauthorized, token might be expired or invalid
+                    alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง");
+                    logout();
+                    return;
+                }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const routines = await response.json();
+                displayRoutines(routines);
+                updateProgressBar(routines);
+            } catch (error) {
+                console.error("Error fetching routines:", error);
+                routineList.innerHTML = '<li style="text-align: center; color: var(--text-color-secondary); padding: 20px; box-shadow: none; border: none; background: transparent;">เกิดข้อผิดพลาดในการโหลดกิจวัตร กรุณาลองใหม่อีกครั้ง</li>';
+            }
+        }
+
+        async function addRoutine() {
+            const title = routineTitleInput.value.trim();
+            const startHour = routineStartHourSelect.value;
+            const startMinute = routineStartMinuteSelect.value;
+            const startTime = `${startHour}:${startMinute}`;
+
+            let endTime = null;
+            const endHour = routineEndHourSelect.value;
+            const endMinute = routineEndMinuteSelect.value;
+            if (endHour && endMinute) { // Only set endTime if both hour and minute are selected
+                endTime = `${endHour}:${endMinute}`;
+            }
+            
+            const description = routineDescriptionInput.value.trim();
+
+            if (!title || !startHour || !startMinute) {
+                alert("กรุณาใส่ชื่อกิจวัตรและเลือกเวลาเริ่มต้นให้ครบ!");
+                return;
+            }
+
+            const token = getToken();
+            if (!token) {
+                alert("คุณไม่ได้เข้าสู่ระบบ กรุณาเข้าสู่ระบบก่อน");
+                checkAuthAndRender();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/routines`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        start_time: startTime,
+                        end_time: endTime,
+                        description: description || null
+                    })
+                });
+
+                if (response.status === 401) {
+                    alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง");
+                    logout();
+                    return;
+                }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
+                }
+                await fetchRoutines(); 
+                const newRoutineElement = routineList.lastElementChild;
+                if (newRoutineElement) {
+                    newRoutineElement.classList.add('animate__animated', 'animate__fadeInRight');
+                }
+                
+                // Clear form and reset selects
+                routineTitleInput.value = '';
+                routineDescriptionInput.value = '';
+                const now = new Date();
+                routineStartHourSelect.value = String(now.getHours()).padStart(2, '0');
+                routineStartMinuteSelect.value = String(now.getMinutes()).padStart(2, '0');
+                routineEndHourSelect.value = ''; // Clear end time selects
+                routineEndMinuteSelect.value = '';
+
+                // Clear Local Storage for these fields after successful add
+                localStorage.removeItem('routineTitle');
+                localStorage.removeItem('routineDescription');
+
+            } catch (error) {
+                console.error("Error adding routine:", error);
+                alert(`เพิ่มกิจวัตรไม่สำเร็จ: ${error.message}`);
+            }
+        }
+
+        async function toggleRoutineCompletion(routineId, currentStatus) {
+            const token = getToken();
+            if (!token) {
+                alert("คุณไม่ได้เข้าสู่ระบบ กรุณาเข้าสู่ระบบก่อน");
+                checkAuthAndRender();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/routines/${routineId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ is_completed: currentStatus ? 0 : 1 }) // Toggle 0 to 1, 1 to 0
+                });
+                if (response.status === 401) {
+                    alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง");
+                    logout();
+                    return;
+                }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
+                }
+                await fetchRoutines(); // Refresh list to update UI
+                // Check if all routines are completed after update
+                const allRoutines = await (await fetch(`${API_BASE_URL}/routines`, {headers: {'Authorization': `Bearer ${token}`}})).json();
+                const totalRoutines = allRoutines.length;
+                const completedCount = allRoutines.filter(routine => routine.is_completed).length;
+                if (totalRoutines > 0 && totalRoutines === completedCount) {
+                    triggerConfetti(); // Fire confetti if all are done
+                }
+            } catch (error) {
+                console.error("Error updating routine completion:", error);
+                alert(`ไม่สามารถอัปเดตสถานะกิจวัตรได้: ${error.message}`);
+            }
+        }
+
+        async function deleteRoutine(routineId) {
+            if (!confirm("คุณแน่ใจหรือไม่ที่ต้องการลบกิจวัตรนี้?")) {
+                return;
+            }
+            const token = getToken();
+            if (!token) {
+                alert("คุณไม่ได้เข้าสู่ระบบ กรุณาเข้าสู่ระบบก่อน");
+                checkAuthAndRender();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/routines/${routineId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.status === 401) {
+                    alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง");
+                    logout();
+                    return;
+                }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
+                }
+                // Add an animation before removing the element
+                const elementToDelete = document.querySelector(`li[data-id="${routineId}"]`);
+                if (elementToDelete) {
+                    elementToDelete.classList.add('animate__animated', 'animate__fadeOutLeft');
+                    elementToDelete.addEventListener('animationend', () => {
+                        fetchRoutines(); // Refresh list after animation
+                    });
+                } else {
+                    fetchRoutines(); // Fallback if no animation needed
+                }
+            } catch (error) {
+                console.error("Error deleting routine:", error);
+                alert(`ไม่สามารถลบกิจวัตรได้: ${error.message}`);
+            }
+        }
+
+        // --- UI Rendering and Event Handling ---
+
+        function displayRoutines(routines) {
+            routineList.innerHTML = ''; // Clear existing
+            if (routines.length === 0) {
+                routineList.innerHTML = '<li style="text-align: center; color: var(--text-color-secondary); padding: 20px; box-shadow: none; border: none; background: transparent;">ยังไม่มีกิจวัตรวันนี้! ลองเพิ่มกิจวัตรใหม่ดูสิ</li>';
+                return;
+            }
+            routines.forEach(routine => {
+                const listItem = document.createElement('li');
+                listItem.dataset.id = routine.id; 
+                if (routine.is_completed) {
+                    listItem.classList.add('completed');
+                }
+                listItem.innerHTML = `
+                    <div class="routine-details">
+                        <h3>${routine.title}</h3>
+                        <p>เวลา: ${routine.start_time} ${routine.end_time ? `- ${routine.end_time}` : ''}</p>
+                        ${routine.description ? `<p>คำอธิบาย: ${routine.description}</p>` : ''}
+                    </div>
+                    <div class="routine-actions">
+                        <button class="complete-btn ${routine.is_completed ? 'undo-btn' : ''}" data-id="${routine.id}" data-completed="${routine.is_completed}">
+                            ${routine.is_completed ? '<i class="fas fa-undo"></i> ยกเลิก' : '<i class="fas fa-check-circle"></i> ทำเสร็จ'}
+                        </button>
+                        <button class="delete-btn" data-id="${routine.id}"><i class="fas fa-trash-alt"></i> ลบ</button>
+                    </div>
+                `;
+                routineList.appendChild(listItem);
+            });
+
+            // Attach event listeners to new buttons
+            document.querySelectorAll('.complete-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const routineId = event.target.closest('button').dataset.id;
+                    const currentStatus = parseInt(event.target.closest('button').dataset.completed);
+                    toggleRoutineCompletion(routineId, currentStatus);
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const routineId = event.target.closest('button').dataset.id;
+                    deleteRoutine(routineId);
+                });
+            });
+        }
+
+        function updateProgressBar(routines) {
+            const totalRoutines = routines.length;
+            const completedCount = routines.filter(routine => routine.is_completed).length;
+            const progress = totalRoutines === 0 ? 0 : (completedCount / totalRoutines) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress === 100 && totalRoutines > 0) {
+                progressBar.style.backgroundColor = '#4CAF50'; // Darker green for 100%
+            } else {
+                progressBar.style.backgroundColor = 'var(--secondary-color)';
+            }
+        }
+
+        // --- Theme Toggle ---
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode); 
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light'); 
+            themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>'; 
+            updateParticleColors(); 
+        }
+
+        // Load saved theme preference
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                isDarkMode = false;
+                document.body.classList.remove('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            if (window.pJSDom && window.pJSDom.length > 0) {
+                updateParticleColors();
+            }
+        }
+
+        // --- Local Storage for Form Inputs (only for the current user) ---
+        function saveFormInputs() {
+            if (getToken()) { // Only save if logged in
+                localStorage.setItem('routineTitle', routineTitleInput.value);
+                localStorage.setItem('routineDescription', routineDescriptionInput.value);
+            }
+        }
+
+        function loadFormInputs() {
+            if (getToken()) { // Only load if logged in
+                const savedTitle = localStorage.getItem('routineTitle');
+                const savedDescription = localStorage.getItem('routineDescription');
+                if (savedTitle) routineTitleInput.value = savedTitle;
+                if (savedDescription) routineDescriptionInput.value = savedDescription;
+            }
+        }
+
+
+        // --- Event Listeners ---
+        addRoutineButton.addEventListener('click', addRoutine);
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Auth form listeners
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+
+        toggleToRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authTitle.textContent = 'ลงทะเบียน';
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'flex';
+            toggleToRegisterLink.style.display = 'none';
+            toggleToLoginLink.style.display = 'block';
+            authMessage.style.display = 'none'; // Clear any message
+        });
+
+        toggleToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authTitle.textContent = 'เข้าสู่ระบบ';
+            loginForm.style.display = 'flex';
+            registerForm.style.display = 'none';
+            toggleToRegisterLink.style.display = 'block';
+            toggleToLoginLink.style.display = 'none';
+            authMessage.style.display = 'none'; // Clear any message
+        });
+
+
+        // Save form inputs on change
+        routineTitleInput.addEventListener('input', saveFormInputs);
+        routineDescriptionInput.addEventListener('input', saveFormInputs);
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();             // Load theme first
+            populateTimeSelects();   // Populate time dropdowns
+            updateDateTime();        // Display current date and time
+            displayRandomQuote();    // Display a random quote
+            setInterval(updateDateTime, 1000); // Update time every second
+            
+            // Check authentication status and render the correct view
+            checkAuthAndRender();
+        });
+
+    </script>
+</body>
+</html>
